@@ -2,6 +2,7 @@ using BookListRazor.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace BookListRazor.Pages.BookList
 {
@@ -19,5 +20,18 @@ namespace BookListRazor.Pages.BookList
         {
             Books = await _db.Book.ToListAsync();
         }
-    }
+
+		public async Task<IActionResult> OnPostDelete(int id)
+		{
+			var book = await _db.Book.FindAsync(id);
+			if (book == null)
+			{
+				return NotFound();
+			}
+			_db.Book.Remove(book);
+			await _db.SaveChangesAsync();
+
+			return RedirectToPage("Index");
+		}
+	}
 }
